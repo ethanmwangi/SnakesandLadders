@@ -16,6 +16,7 @@ class SnakesAndLadders:
         self.board_size = 10
         self.tile_size = 60
         self.draw_board()
+        self.draw_snakes_and_ladders()
 
         self.positions = [0, 0]
         self.turn = 0  # 0 for Player 1, 1 for Player 2
@@ -33,6 +34,7 @@ class SnakesAndLadders:
         self.create_tokens()
 
     def draw_board(self):
+        colors = ["#fffacd", "white"]  # light yellow and white
         for i in range(self.board_size):
             for j in range(self.board_size):
                 x1 = j * self.tile_size
@@ -40,9 +42,23 @@ class SnakesAndLadders:
                 x2 = x1 + self.tile_size
                 y2 = y1 + self.tile_size
 
+                color = colors[(i + j) % 2]
                 number = i * 10 + j + 1 if i % 2 == 0 else i * 10 + (9 - j) + 1
-                self.canvas.create_rectangle(x1, y1, x2, y2, fill="white")
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill=color)
                 self.canvas.create_text(x1 + 30, y1 + 30, text=str(number), font=("Arial", 10))
+
+    def draw_snakes_and_ladders(self):
+        # Draw ladders (green)
+        for start, end in ladders.items():
+            x1, y1 = self.get_coords(start)
+            x2, y2 = self.get_coords(end)
+            self.canvas.create_line(x1, y1, x2, y2, fill="green", width=4, arrow=tk.LAST)
+
+        # Draw snakes (red)
+        for start, end in snakes.items():
+            x1, y1 = self.get_coords(start)
+            x2, y2 = self.get_coords(end)
+            self.canvas.create_line(x1, y1, x2, y2, fill="red", width=4, arrow=tk.LAST)
 
     def create_tokens(self):
         # Player 1: Red, Player 2: Blue
@@ -58,6 +74,15 @@ class SnakesAndLadders:
             col = 9 - col
         x = col * self.tile_size + 5 + (30 * self.turn)
         y = (9 - row) * self.tile_size + 5
+        return x, y
+
+    def get_coords(self, position):
+        row = (position - 1) // self.board_size
+        col = (position - 1) % self.board_size
+        if row % 2 == 1:
+            col = 9 - col
+        x = col * self.tile_size + self.tile_size / 2
+        y = (9 - row) * self.tile_size + self.tile_size / 2
         return x, y
 
     def roll_dice(self):
@@ -101,3 +126,4 @@ if __name__ == "__main__":
     root = tk.Tk()
     game = SnakesAndLadders(root)
     root.mainloop()
+    
